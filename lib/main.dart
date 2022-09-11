@@ -48,10 +48,18 @@ class _MyAppState extends State<MyApp> {
   var userContent;
 
   saveData() async{
+    //봤던 데이타는 빠르게 로드되고, 서버와 주고받는 데이타양을 줄일 수 있음
+    //앱결 때 shared_preferences에 있는 게시물을 가져올 수 있을 것
     var storage = await SharedPreferences.getInstance();
     storage.setString('name', 'john');
+    // storage.setBool('name', true);
+    // storage.setInt('name', 20);
+    // storage.setDouble('name', 20.5);
+    // storage.setStringList('name', ['john', 'park']);
+    // storage.remove('name');
     var result = storage.get('name');
     print(result);
+
   }
 
   addMyData(){
@@ -95,6 +103,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
+    saveData();
     getData();
   }
 
