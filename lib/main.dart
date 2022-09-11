@@ -9,12 +9,21 @@ import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(
-      MaterialApp(
-          theme: style.theme,
-          home: MyApp()
+    //Provider를 여러 개 사용하기 위해서..
+    MultiProvider(providers: [
+      ChangeNotifierProvider(create: (c) => Store1()),
+      ChangeNotifierProvider(create: (c) => Store2()),
+    ],
+      // ChangeNotifierProvider(
+      //   create: (c) => Store1(),
+        child: MaterialApp(
+            theme: style.theme,
+            home: MyApp()
+        ),
       )
   );
 }
@@ -294,6 +303,44 @@ class Upload extends StatelessWidget {
   }
 }
 
+class Store2 extends ChangeNotifier {
+  var name = 'taeyong';
+
+  //state 변경 함수
+  changeName() {
+    name = 'dongjin';
+    notifyListeners();  //재 렌더링하는 메서드
+  }
+}
+
+
+// Provider 를 통한 state 관리
+// store라고 명명한 이유는 그냥 창고라 생각
+class Store1 extends ChangeNotifier {
+
+  var follower = 0;
+  var friend = false;   //지금 친구인지, 기본 값은 false
+  var profileImage = [];
+
+  getData() async{
+    var result = await http.get(Uri.parse('https://codingapple1.github.io/app/profile.json'));
+
+    var result2 = jsonDecode(result.body);
+    profileImage = result2;
+    notifyListeners();
+  }
+
+  addFollower(){
+    if( friend == false){   // 친구가 아니면 follow를 할 수 있고 없고를 작성할 수 있음
+      follower++;
+      friend = true;
+    } else {
+      follower--;
+      friend = false;
+    }
+    notifyListeners();
+  }
+}
 
 class Profile extends StatelessWidget {
   const Profile({Key? key}) : super(key: key);
@@ -301,11 +348,29 @@ class Profile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: Text('프로필페이지'),
+      appBar: AppBar(title: Text(context.watch<Store2>().name),),
+      body: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          CircleAvatar(
+            radius: 30,
+            backgroundColor: Colors.grey,
+          ),
+          Text('팔로워 ${context.watch<Store1>().follower}명'),
+          ElevatedButton(onPressed: (){
+            context.read<Store1>().addFollower();
+          }, child: Text('follow')),
+          
+          //사진가져오기
+          ElevatedButton(onPressed: (){
+            context.read<Store1>().getData();
+          }, child: Text('사진가져오기')),
+        ],
+      )
     );
   }
 }
+
 
 ////////////////////////////////////////////
 // ( 참고 )  동적 UI 만드는 법
@@ -313,7 +378,6 @@ class Profile extends StatelessWidget {
 // 2. state 에 따라 UI가 어떻게 보일지 작성
 // 3. 유저가 쉽게 state 조작할 수 있게
 ////////////////////////////////////////////
-
 
 ////////////////////////////////////////////
 // ( 참고 )  데이터보존방법
