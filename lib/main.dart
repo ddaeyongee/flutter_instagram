@@ -1,18 +1,13 @@
 import 'package:flutter/material.dart';
+import './style.dart' as style;
 
 void main() {
-  runApp(MaterialApp(
-      theme: ThemeData(
-        //스타일 모아놓는 ThemeData()
-        iconTheme: IconThemeData(color: Colors.blue),
-        appBarTheme: AppBarTheme(
-            color: Colors.grey,
-            actionsIconTheme: IconThemeData(color: Colors.blue)),
-        textTheme: TextTheme(
-          bodyText2: TextStyle( color : Colors.black ),
-        )
-      ),
-      home: MyApp()));
+  runApp(
+      MaterialApp(
+          theme: style.theme,
+          home: MyApp()
+      )
+  );
 }
 
 // var a = TextStyle();
@@ -23,10 +18,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        actions: [Icon(Icons.star)],
-      ),
-      body: Icon(Icons.star),
+      appBar: AppBar(title: Text('Instagram clone'), actions: [
+        IconButton(
+          icon: Icon(Icons.add_box_outlined),
+          onPressed: () {},
+          iconSize: 30,
+        )
+      ]),
+
+      // body: TextButton(
+      //   onPressed: (){}, 
+      //   child: Text('테스트'),
+      // ),
+      body: Text('안녕', style: Theme.of(context).textTheme.bodyText2,),  //가까운 Theme 을 찾아서 가져오기
     );
   }
 }
