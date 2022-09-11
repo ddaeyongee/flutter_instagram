@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:flutter/rendering.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(
@@ -45,6 +46,13 @@ class _MyAppState extends State<MyApp> {
   var data = [];
   var userImage;
   var userContent;
+
+  saveData() async{
+    var storage = await SharedPreferences.getInstance();
+    storage.setString('name', 'john');
+    var result = storage.get('name');
+    print(result);
+  }
 
   addMyData(){
     var myData = {
@@ -256,4 +264,11 @@ class Upload extends StatelessWidget {
 // 1. state 에  UI 의 현재상태 저장
 // 2. state 에 따라 UI가 어떻게 보일지 작성
 // 3. 유저가 쉽게 state 조작할 수 있게
+////////////////////////////////////////////
+
+
+////////////////////////////////////////////
+// ( 참고 )  데이터보존방법
+// 1. 서버에 보내서 DB 에 저장
+// 2. 폰 메모리카드에 저장(shared preferences 이용) 중요한건 DB에 ~
 ////////////////////////////////////////////
