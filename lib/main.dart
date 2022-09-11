@@ -23,12 +23,24 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   var tab = 0;
+  var data = [];
 
   getData() async{
     var result = await http.get(Uri.parse('https://codingapple1.github.io/app/data.json'));  //GET요청
+
+    // 응답 error 처리를 if http status 로 필터링하면 좋다
+    // if (result.statusCode == 200) {
+    //
+    // } else{
+    //
+    // }
+
     var result2 = jsonDecode(result.body);
-    print(jsonDecode(result.body));
-  }
+    // print(result2);
+    setState(() {
+      data = result2;
+    });
+   }
 
   @override
   void initState() {
@@ -52,7 +64,8 @@ class _MyAppState extends State<MyApp> {
       //   onPressed: (){},
       //   child: Text('테스트'),
       // ),
-      body: [Home(), Text('샵페이지')][tab],  //가까운 Theme 을 찾아서 가져오기
+      body: [Home(data: data), Text('샵페이지')][tab],  //가까운 Theme 을 찾아서 가져오기
+      // body: [FutureBuilder(future: data, builder: (){}), Text('샵페이지')][tab],
       bottomNavigationBar: BottomNavigationBar(
         showSelectedLabels: false,
         showUnselectedLabels: false,
@@ -72,38 +85,42 @@ class _MyAppState extends State<MyApp> {
 }
 
 class Home extends StatelessWidget {
-  const Home({Key? key}) : super(key: key);
+  const Home({Key? key, this.data}) : super(key: key);
+
+  final data;
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-        itemCount: 3, 
-        itemBuilder: (c, i){
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Image.network('https://codingapple1.github.io/kona.jpg'),
-              Container(
-                constraints: BoxConstraints(maxWidth: 600),
-                padding: EdgeInsets.all(20),
-                width: double.infinity,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('좋아요 100'),
-                    Text('글쓴이'),
-                    Text('글내용'),
-                  ],
-                ),
-              )
-            ],
-          );
-        });
+    if (data.isNotEmpty) {
+      return ListView.builder(
+          itemCount: 3,
+          itemBuilder: (c, i) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Image.network('https://codingapple1.github.io/kona.jpg'),
+                Container(
+                  constraints: BoxConstraints(maxWidth: 600),
+                  padding: EdgeInsets.all(20),
+                  width: double.infinity,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Image.network(data[i]['image']),
+                      Text('좋아요 100'),
+                      Text('글쓴이'),
+                      Text(data[i]['content']),
+                    ],
+                  ),
+                )
+              ],
+            );
+          });
+    } else {
+      return Text('로딩중');
+    }
   }
 }
-
-
-
 
 ////////////////////////////////////////////
 // ( 참고 )  동적 UI 만드는 법
