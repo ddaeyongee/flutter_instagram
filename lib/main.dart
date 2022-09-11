@@ -11,6 +11,8 @@ import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 
+import './notification.dart';
+
 void main() {
   runApp(
     //Provider를 여러 개 사용하기 위해서..
@@ -113,14 +115,23 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-
-    saveData();
+    initNotification(context);
+    // saveData();
     getData();
+
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        child: Text('+'),
+        onPressed: () {
+          
+          //클릭하면 알람 전송
+          showNotification();
+        },
+      ),
       appBar: AppBar(
           title: Text('Instagram clone'),
           actions: [
