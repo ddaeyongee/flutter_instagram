@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import './style.dart' as style;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/rendering.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 void main() {
   runApp(
@@ -40,7 +43,30 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   var tab = 0;
   var data = [];
+  var userImage;
+  var userContent;
 
+  addMyData(){
+    var myData = {
+      'id': data.length,
+      'image': userImage,
+      'likes': 5,
+      'date': 'July 25',
+      'content': userContent,
+      'liked': false,
+      'user': 'John Kim'
+    };
+    setState(() {
+      data.insert(0, myData);
+    });
+  }
+
+
+  setUserContent(a){
+    setState(() {
+      userContent = a;
+    });
+  }
 
   addData(a) {
     setState(() {
@@ -67,12 +93,27 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Instagram clone'), actions: [
+      appBar: AppBar(
+          title: Text('Instagram clone'),
+          actions: [
         IconButton(
           icon: Icon(Icons.add_box_outlined),
-          onPressed: () {
+          onPressed: () async {
+            var picker = ImagePicker();
+            var image = await picker.pickImage(source: ImageSource.gallery);
+            if ( image != null ) {
+              setState(() {
+                userImage = File(image.path);
+              });
+            }
+            // Image.file(userImage);
+
             Navigator.push(context, // 새 페이지 띄울 때 Navigator 사용
-                MaterialPageRoute(builder: (c) => Upload())   //함수 내 return 을 => 로 대체할 수 있음
+                MaterialPageRoute(builder: (c) => Upload(
+                    userImage : userImage,
+                    setUserContent: setUserContent,
+                    addMyData : addMyData
+                ))   //함수 내 return 을 => 로 대체할 수 있음
             );
           },
           iconSize: 30,
@@ -155,7 +196,10 @@ class _HomeState extends State<Home> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Image.network(widget.data[i]['image']),
+                      // 삼항 연산자 1== 1 ? '진실' : '거짓'
+                      widget.data[i]['image'].runtimeType == String
+                          ? Image.network(widget.data[i]['image'])
+                          : Image.file(widget.data[i]['image']),
                       Text('좋아요 ${widget.data[i]['likes']}'),
                       Text(widget.data[i]['date']),
                       Text(widget.data[i]['content']),
@@ -172,16 +216,31 @@ class _HomeState extends State<Home> {
 }
 
 class Upload extends StatelessWidget {
-  const Upload({Key? key}) : super(key: key);
+  const Upload({Key? key, this.userImage, this.setUserContent, this.addMyData}) : super(key: key);
+  final userImage;
+  final setUserContent;
+  final addMyData;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        actions: [
+          IconButton(onPressed: (){
+            addMyData();
+          }, icon: Icon(Icons.send))
+        ],
+      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Image.file(userImage),
+          // Image.asset(userImage),
           Text('이미지 업로드 화면'),
+          TextField(onChanged: (text){
+            setUserContent(text);
+          }),
           IconButton(onPressed: (){
             Navigator.pop(context);
           }, icon: Icon(Icons.close))
