@@ -13,6 +13,21 @@ void main() {
   );
 }
 
+// ! 중요
+// 페이지가 많으면 아래와 같이 routes 를 사용
+// 복잡한 앱에 좋음
+
+// void main() {
+//   runApp(MaterialApp(
+//     theme: style.theme,
+//     initialRoute: '/',
+//     routes: {
+//       '/': (c) => Text('첫페이지'),
+//       '/detail': (c) => Text('둘째페이지')
+//     },
+//   ));
+// }
+
 // var a = TextStyle();
 
 class MyApp extends StatefulWidget {
@@ -55,7 +70,11 @@ class _MyAppState extends State<MyApp> {
       appBar: AppBar(title: Text('Instagram clone'), actions: [
         IconButton(
           icon: Icon(Icons.add_box_outlined),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(context, // 새 페이지 띄울 때 Navigator 사용
+                MaterialPageRoute(builder: (c) => Upload())   //함수 내 return 을 => 로 대체할 수 있음
+            );
+          },
           iconSize: 30,
         )
       ]),
@@ -151,6 +170,27 @@ class _HomeState extends State<Home> {
     }
   }
 }
+
+class Upload extends StatelessWidget {
+  const Upload({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('이미지 업로드 화면'),
+          IconButton(onPressed: (){
+            Navigator.pop(context);
+          }, icon: Icon(Icons.close))
+        ],
+      ),
+    );
+  }
+}
+
 
 ////////////////////////////////////////////
 // ( 참고 )  동적 UI 만드는 법
