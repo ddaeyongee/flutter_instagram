@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import './style.dart' as style;
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() {
   runApp(
@@ -20,9 +22,21 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
   var tab = 0;
 
+  getData() async{
+    var result = await http.get(Uri.parse('https://codingapple1.github.io/app/data.json'));  //GET요청
+    var result2 = jsonDecode(result.body);
+    print(jsonDecode(result.body));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    getData();
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +52,7 @@ class _MyAppState extends State<MyApp> {
       //   onPressed: (){},
       //   child: Text('테스트'),
       // ),
-      body: [Text('홈'),Text('샵페이지')][tab],  //가까운 Theme 을 찾아서 가져오기
+      body: [Home(), Text('샵페이지')][tab],  //가까운 Theme 을 찾아서 가져오기
       bottomNavigationBar: BottomNavigationBar(
         showSelectedLabels: false,
         showUnselectedLabels: false,
@@ -56,6 +70,39 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
+
+class Home extends StatelessWidget {
+  const Home({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+        itemCount: 3, 
+        itemBuilder: (c, i){
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Image.network('https://codingapple1.github.io/kona.jpg'),
+              Container(
+                constraints: BoxConstraints(maxWidth: 600),
+                padding: EdgeInsets.all(20),
+                width: double.infinity,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('좋아요 100'),
+                    Text('글쓴이'),
+                    Text('글내용'),
+                  ],
+                ),
+              )
+            ],
+          );
+        });
+  }
+}
+
+
 
 
 ////////////////////////////////////////////
