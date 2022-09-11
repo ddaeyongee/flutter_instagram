@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import './style.dart' as style;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter/rendering.dart';
 
 void main() {
   runApp(
@@ -25,16 +26,15 @@ class _MyAppState extends State<MyApp> {
   var tab = 0;
   var data = [];
 
+
+  addData(a) {
+    setState(() {
+      data.add(a);
+    });
+  }
+
   getData() async{
     var result = await http.get(Uri.parse('https://codingapple1.github.io/app/data.json'));  //GET요청
-
-    // 응답 error 처리를 if http status 로 필터링하면 좋다
-    // if (result.statusCode == 200) {
-    //
-    // } else{
-    //
-    // }
-
     var result2 = jsonDecode(result.body);
     // print(result2);
     setState(() {
@@ -48,7 +48,7 @@ class _MyAppState extends State<MyApp> {
 
     getData();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,7 +64,7 @@ class _MyAppState extends State<MyApp> {
       //   onPressed: (){},
       //   child: Text('테스트'),
       // ),
-      body: [Home(data: data), Text('샵페이지')][tab],  //가까운 Theme 을 찾아서 가져오기
+      body: [Home(data: data, addData : addData), Text('샵페이지')][tab],  //가까운 Theme 을 찾아서 가져오기
       // body: [FutureBuilder(future: data, builder: (){}), Text('샵페이지')][tab],
       bottomNavigationBar: BottomNavigationBar(
         showSelectedLabels: false,
@@ -84,16 +84,46 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-class Home extends StatelessWidget {
-  const Home({Key? key, this.data}) : super(key: key);
-
+// 부모
+class Home extends StatefulWidget {
+  const Home({Key? key, this.data, this.addData}) : super(key: key);
   final data;
+  final addData;
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+
+  var scroll = ScrollController();  //유저가 스크롤 했던 데이타를 체크
+
+  getMore() async {
+    var result = await http.get(Uri.parse('https://codingapple1.github.io/app/more1.json'));
+    var result2 = jsonDecode(result.body);
+    widget.addData(result2);
+  }
+  //위치 측정은 스크롤 움직일 때마다 해야 함
+  @override
+  void initState() {
+    super.initState();
+    scroll.addListener(() {
+      // print(scroll.position.pixels);  // 스크롤 바를 내린 거리 위치 측정
+      // print(scroll.position.maxScrollExtent); // 스크롤 최대 내린 거리 위치
+      // print(scroll.position.userScrollDirection); // 스크롤 방향
+      if(scroll.position.pixels == scroll.position.maxScrollExtent){
+        // print('같음');
+        getMore();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (data.isNotEmpty) {
+    if (widget.data.isNotEmpty) {
       return ListView.builder(
           itemCount: 3,
+          controller: scroll,
           itemBuilder: (c, i) {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -106,10 +136,10 @@ class Home extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Image.network(data[i]['image']),
-                      Text('좋아요 100'),
-                      Text('글쓴이'),
-                      Text(data[i]['content']),
+                      Image.network(widget.data[i]['image']),
+                      Text('좋아요 ${widget.data[i]['likes']}'),
+                      Text(widget.data[i]['date']),
+                      Text(widget.data[i]['content']),
                     ],
                   ),
                 )
