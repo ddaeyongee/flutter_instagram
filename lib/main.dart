@@ -343,30 +343,60 @@ class Store1 extends ChangeNotifier {
 }
 
 class Profile extends StatelessWidget {
-  const Profile({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(context.watch<Store2>().name),),
-      body: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          CircleAvatar(
-            radius: 30,
-            backgroundColor: Colors.grey,
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: ProfileHeader(),
           ),
-          Text('팔로워 ${context.watch<Store1>().follower}명'),
-          ElevatedButton(onPressed: (){
-            context.read<Store1>().addFollower();
-          }, child: Text('follow')),
-          
-          //사진가져오기
-          ElevatedButton(onPressed: (){
-            context.read<Store1>().getData();
-          }, child: Text('사진가져오기')),
+          SliverGrid(
+              delegate: SliverChildBuilderDelegate(
+                (c, i) => Image.network(context.watch<Store1>().profileImage[i]),
+                childCount: context.watch<Store1>().profileImage.length,
+              ),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+          )
         ],
       )
+
+      // GridView.builder(
+      //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+      //   itemBuilder: (c, i) {
+      //     return Container(color: Colors.grey);
+      //   },
+      //   itemCount: 3,
+      // ),
+    );
+  }
+
+  const Profile({Key? key}) : super(key: key);
+}
+
+class ProfileHeader extends StatelessWidget {
+  const ProfileHeader({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        CircleAvatar(
+          radius: 30,
+          backgroundColor: Colors.grey,
+        ),
+        Text('팔로워 ${context.watch<Store1>().follower}명'),
+        ElevatedButton(onPressed: (){
+          context.read<Store1>().addFollower();
+        }, child: Text('follow')),
+
+        //사진가져오기
+        ElevatedButton(onPressed: (){
+          context.read<Store1>().getData();
+        }, child: Text('사진가져오기')),
+      ],
     );
   }
 }
