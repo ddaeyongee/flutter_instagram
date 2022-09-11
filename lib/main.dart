@@ -1,9 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import './style.dart' as style;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -217,6 +219,31 @@ class _HomeState extends State<Home> {
                       widget.data[i]['image'].runtimeType == String
                           ? Image.network(widget.data[i]['image'])
                           : Image.file(widget.data[i]['image']),
+
+                      GestureDetector(
+                        child: Text(widget.data[i]['user']),
+                        onTap: (){
+                          Navigator.push(context,
+                              // CupertinoPageRoute(builder: (c) => Profile())
+                            PageRouteBuilder(
+                              pageBuilder: (c, a1, a2) => Profile(),
+                              transitionsBuilder: (c, a1, a2, child) =>
+
+                              // Fade 애니메이션 용 위젯
+                              FadeTransition(opacity: a1, child: child),
+                              
+                              // Slide 애니메이션 용 위젯
+                              // SlideTransition(
+                              //     position: Tween(
+                              //     begin: Offset(-1.0, 0.0),
+                              //       end: Offset(0.0, 0.0),
+                              //     ).animate(a1),
+                              //     child: child)
+                            )
+                          );
+                        },
+                      ),
+
                       Text('좋아요 ${widget.data[i]['likes']}'),
                       Text(widget.data[i]['date']),
                       Text(widget.data[i]['content']),
@@ -267,6 +294,18 @@ class Upload extends StatelessWidget {
   }
 }
 
+
+class Profile extends StatelessWidget {
+  const Profile({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: Text('프로필페이지'),
+    );
+  }
+}
 
 ////////////////////////////////////////////
 // ( 참고 )  동적 UI 만드는 법
