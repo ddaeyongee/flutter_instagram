@@ -127,9 +127,12 @@ class _MyAppState extends State<MyApp> {
       floatingActionButton: FloatingActionButton(
         child: Text('+'),
         onPressed: () {
-          
+
+          //정해진 시간에 알람 전송
+          showNotification2();
+
           //클릭하면 알람 전송
-          showNotification();
+          // showNotification();
         },
       ),
       appBar: AppBar(
