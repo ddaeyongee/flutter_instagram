@@ -6,7 +6,18 @@ var theme = ThemeData(
   ),
 
   textButtonTheme: TextButtonThemeData(
-      style: TextButton.styleFrom(
+
+  var result = await http.get(Uri.parse('https://codingapple1.github.io/app/data.json'));  //GET요청
+var result2 = jsonDecode(result.body);
+// print(result2);
+setState(() {
+data = result2;
+});
+}
+
+@override
+void initState() {
+  super.initState(); style: TextButton.styleFrom(
     backgroundColor: Colors.grey,
   )),
 

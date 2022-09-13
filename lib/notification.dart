@@ -62,7 +62,6 @@ showNotification() async {
 }
 
 showNotification2() async {
-
   // 이게 있어야 시간 관련 설정이 가능하다
   tz.initializeTimeZones();
 
@@ -83,11 +82,30 @@ showNotification2() async {
       2,
       '제목2',
       '내용2',
+      // makeDate(8, 30, 0),   // 매일 8시 30분
       // tz.TZDateTime.now(tz.local), // 폰의 현재 시간
-      tz.TZDateTime.now(tz.local).add(Duration(seconds: 5)),    //이 시간에 알람을 띄움 !!!!
+      tz.TZDateTime.now(tz.local).add(Duration(seconds: 5)), //이 시간에 알람을 띄움 !!!!
       NotificationDetails(android: androidDetails, iOS: iosDetails),
       androidAllowWhileIdle: true,
       uiLocalNotificationDateInterpretation:
       UILocalNotificationDateInterpretation.absoluteTime
+    // matchDateTimeComponents: DateTimeComponents.time   // 매일 같은 시각에 알람을 띄움 !!!
+    // matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime   // 매주 첫 날에 알람을 띄움 !!!
+    // matchDateTimeComponents: DateTimeComponents.dayOfMonthAndTime   // 매월 첫 날에 알람을 띄움 !!!
   );
+}
+
+//서버에서 보내는 Push 알림 띄우기
+// Firebase Cloud Messaging 을 통해서 폰으로 보냄
+// 서버 ->  Firebase Cloud Messaging -> Google Play
+
+makeDate(hour, min, sec) {
+  var now = tz.TZDateTime.now(tz.local);
+  var when =
+      tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, min, sec);
+  if (when.isBefore(now)) {
+    return when.add(Duration(days: 1));
+  } else {
+    return when;
+  }
 }
